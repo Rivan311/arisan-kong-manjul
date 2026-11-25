@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arisan Keluarga Besar Kong Manjul</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            serif: ['Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.012); }
+    }
+    .winner-highlight {
+      animation: pulseSoft 1.8s ease-in-out infinite;
+    }
+    .hero-scenic-bg {
+      background-color: #eef6fc;
+      background-image:
+        radial-gradient(ellipse 75% 48% at 52% 4%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.58) 46%, rgba(255, 255, 255, 0) 78%),
+        radial-gradient(circle at 88% 18%, rgba(125, 211, 252, 0.42) 0%, rgba(125, 211, 252, 0) 48%),
+        radial-gradient(ellipse 95% 55% at 62% 96%, rgba(134, 239, 172, 0.68) 0%, rgba(187, 247, 208, 0.35) 45%, rgba(240, 249, 255, 0) 78%),
+        linear-gradient(180deg, #f8fcff 0%, #e4f2fb 36%, #d9eff4 68%, #e4f5ea 100%);
+    }
+  </style>
+</head>
+<body class="bg-slate-200/70 text-slate-800 font-sans antialiased min-h-screen flex flex-col overflow-x-hidden">
+
+  <!-- Top Navy Bar -->
+  <header id="top-status-banner" class="sticky top-0 z-40 bg-[#082447] text-white border-b border-[#113766] shadow-sm">
+    <div class="w-full px-3 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <button
+          onclick="switchTab('arisan')"
+          class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center text-white text-base transition cursor-pointer shrink-0"
+          title="Beranda"
+        >
+          ☰
+        </button>
+        <span class="text-white/30 hidden sm:inline">|</span>
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="font-bold text-xs sm:text-sm tracking-wide truncate">Keluarga Besar Kong Manjul</span>
+          <span
+            id="session-pill"
+            class="hidden md:inline-flex items-center gap-1.5 bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded text-[11px] font-extrabold uppercase tracking-wide shrink-0"
+          >
+            <span id="session-pill-text">PUBLIK</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <span id="banner-mode-title" class="hidden xl:inline-block text-xs text-sky-100/90 font-medium mr-1">
+          Mode: PUBLIK — Pantau Data Real-time
+        </span>
+
+        <button
+          id="btn-login-modal"
+          onclick="toggleLoginModal()"
+          class="inline-flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-extrabold shadow-2xs transition cursor-pointer whitespace-nowrap"
+        >
+          <span>🔐</span>
+          <span>Login Admin</span>
+        </button>
+
+        <button
+          id="btn-logout"
+          onclick="logoutAdmin()"
+          class="hidden inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer whitespace-nowrap"
+        >
+          <span>🚪</span>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Horizontal Nav -->
+    <div class="lg:hidden bg-[#0b2f5c] border-t border-white/10 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto">
+      <button onclick="switchTab('arisan')" id="mnav-arisan" class="mnav-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 whitespace-nowrap cursor-pointer">
+        🏠 Beranda
+      </button>
+      <button onclick="switchTab('anggota')" id="mnav-anggota" class="mnav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-sky-100 hover:bg-white/10 whitespace-nowrap cursor-pointer">
+        👥 Anggota
+      </button>
+      <button onclick="switchTab('riwayat')" id="mnav-riwayat" class="mnav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-sky-100 hover:bg-white/10 whitespace-nowrap cursor-pointer">
+        🕒 Riwayat
+      </button>
+      <button onclick="switchTab('kas')" id="mnav-kas" class="mnav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-sky-100 hover:bg-white/10 whitespace-nowrap cursor-pointer">
+        💰 Uang Kas
+      </button>
+      <button onclick="switchTab('konsumsi')" id="mnav-konsumsi" class="mnav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-sky-100 hover:bg-white/10 whitespace-nowrap cursor-pointer">
+        🍱 Konsumsi
+      </button>
+    </div>
+  </header>
+
+  <!-- Shell: Left Navy Sidebar + Main Content -->
+  <div class="w-full flex-1 flex">
+    <!-- Left Sidebar -->
+    <aside class="hidden lg:flex lg:flex-col lg:w-64 shrink-0 bg-gradient-to-b from-[#071f3d] via-[#09284f] to-[#061830] text-white select-none">
+      <!-- Sidebar Brand & Villa Thumbnail -->
+      <div class="p-4 border-b border-white/10">
+        <div class="rounded-xl overflow-hidden border border-white/15 bg-[#0e3463] shadow-sm">
+          <div class="h-24 w-full relative flex items-end p-2.5 bg-gradient-to-tr from-[#061830]/90 via-sky-900/50 to-emerald-700/40">
+            <svg viewBox="0 0 240 90" class="w-full h-full object-cover opacity-90" preserveAspectRatio="xMidYMid slice">
+              <rect width="240" height="90" fill="#bae6fd" />
+              <polygon points="0,70 55,28 115,70" fill="#64748b" />
+              <polygon points="85,70 155,22 240,70" fill="#475569" />
+              <rect x="0" y="64" width="240" height="26" fill="#15803d" />
+              <rect x="135" y="46" width="52" height="24" rx="2" fill="#ffffff" stroke="#cbd5e1" />
+              <polygon points="130,46 161,34 192,46" fill="#1e3a8a" />
+              <rect x="143" y="52" width="10" height="10" fill="#38bdf8" />
+              <rect x="163" y="52" width="10" height="10" fill="#38bdf8" />
+            </svg>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#061830]/90 via-[#061830]/30 to-transparent flex flex-col justify-end p-2.5">
+              <p class="text-[11px] uppercase tracking-wider text-amber-300 font-bold leading-none">Keluarga Besar</p>
+              <p class="text-sm font-extrabold text-white tracking-tight mt-0.5 leading-tight">KONG MANJUL</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="p-3 space-y-1 flex-1">
+        <button
+          id="snav-arisan"
+          onclick="switchTab('arisan')"
+          class="snav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-bold bg-amber-400 text-slate-950 shadow-2xs transition cursor-pointer text-left"
+        >
+          <span>🏠</span>
+          <span>Beranda</span>
+        </button>
+
+        <button
+          id="snav-anggota"
+          onclick="switchTab('anggota')"
+          class="snav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-sky-100/90 hover:bg-white/10 hover:text-white transition cursor-pointer text-left"
+        >
+          <span>👥</span>
+          <span>Anggota</span>
+        </button>
+
+        <button
+          id="snav-riwayat"
+          onclick="switchTab('riwayat')"
+          class="snav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-sky-100/90 hover:bg-white/10 hover:text-white transition cursor-pointer text-left"
+        >
+          <span>🕒</span>
+          <span>Riwayat Arisan</span>
+        </button>
+
+        <button
+          id="snav-kas"
+          onclick="switchTab('kas')"
+          class="snav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-sky-100/90 hover:bg-white/10 hover:text-white transition cursor-pointer text-left"
+        >
+          <span>💰</span>
+          <span>Uang Kas</span>
+        </button>
+
+        <button
+          id="snav-konsumsi"
+          onclick="switchTab('konsumsi')"
+          class="snav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-sky-100/90 hover:bg-white/10 hover:text-white transition cursor-pointer text-left"
+        >
+          <span>🍱</span>
+          <span>Konsumsi</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Bottom Motto -->
+      <div class="p-4 border-t border-white/10">
+        <p class="font-serif italic text-amber-300 text-lg leading-snug">
+          Silaturahmi<br>
+          <span class="text-white/90 text-base">— Mempererat</span><br>
+          Kebersamaan
+        </p>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main id="workspace-top" class="relative flex-1 min-w-0 hero-scenic-bg px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-5 scroll-mt-28 lg:scroll-mt-20 overflow-hidden">
+
+      <!-- Subtle Scenic Valley & Mountain Backdrop -->
+      <svg
+        viewBox="0 0 1440 900"
+        class="pointer-events-none select-none fixed lg:static inset-0 w-full h-full opacity-35"
+        style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0;"
+        preserveAspectRatio="xMidYMax slice"
+      >
+        <defs>
+          <linearGradient id="skyWash" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+            <stop offset="55%" stop-color="#bae6fd" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#bbf7d0" stop-opacity="0.2" />
+          </linearGradient>
+          <linearGradient id="farRidge" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#64748b" stop-opacity="0.45" />
+            <stop offset="100%" stop-color="#94a3b8" stop-opacity="0.12" />
+          </linearGradient>
+          <linearGradient id="midHills" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4ade80" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#16a34a" stop-opacity="0.15" />
+          </linearGradient>
+        </defs>
+        <rect width="1440" height="900" fill="url(#skyWash)" />
+        <path d="M220,440 Q460,210 720,390 T1240,260 L1440,340 L1440,620 L220,620 Z" fill="url(#farRidge)" />
+        <path d="M0,560 Q340,430 690,520 T1440,450 L1440,900 L0,900 Z" fill="url(#midHills)" />
+        <path d="M0,690 Q420,600 880,680 T1440,630 L1440,900 L0,900 Z" fill="#86efac" opacity="0.28" />
+      </svg>
+
+      <!-- Hero Banner Header + Admin Toolbar -->
+      <section class="relative z-10 rounded-2xl bg-white/88 backdrop-blur-xs border border-white shadow-sm p-4 sm:p-6 overflow-hidden">
+        <!-- Decorative Mountain, Valley & Villa SVG -->
+        <svg viewBox="0 0 640 200" class="hidden md:block absolute right-0 top-0 h-full w-80 lg:w-96 pointer-events-none opacity-90" preserveAspectRatio="xMaxYMid slice">
+          <defs>
+            <linearGradient id="bannerHillGreen" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#4ade80" stop-opacity="0.75" />
+              <stop offset="100%" stop-color="#15803d" stop-opacity="0.85" />
+            </linearGradient>
+          </defs>
+          <polygon points="150,200 320,42 475,200" fill="#64748b" opacity="0.42" />
+          <polygon points="300,200 485,22 640,200" fill="#475569" opacity="0.38" />
+          <path d="M80,200 Q260,118 640,132 L640,200 Z" fill="url(#bannerHillGreen)" />
+          <path d="M220,200 Q430,148 640,162 L640,200 Z" fill="#166534" opacity="0.45" />
+          <rect x="432" y="96" width="128" height="58" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+          <polygon points="420,98 496,62 572,98" fill="#1e3a8a" />
+          <rect x="448" y="108" width="20" height="16" rx="2" fill="#7dd3fc" />
+          <rect x="486" y="108" width="20" height="16" rx="2" fill="#7dd3fc" />
+          <rect x="524" y="108" width="20" height="16" rx="2" fill="#7dd3fc" />
+          <rect x="488" y="132" width="16" height="22" rx="1" fill="#e2e8f0" />
+        </svg>
+
+        <div class="relative z-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2.5">
+              <h1 id="page-main-title" class="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-[#082447] tracking-tight leading-tight">
+                Arisan Keluarga Besar Kong Manjul
+              </h1>
+              <span
+                id="page-role-badge"
+                class="inline-flex items-center bg-amber-400 text-slate-950 px-3 py-0.5 rounded-md text-xs font-black uppercase tracking-wider shadow-2xs"
+              >
+                PUBLIK
+              </span>
+            </div>
+            <p id="page-main-subtitle" class="font-serif italic text-sm sm:text-base text-slate-600 mt-1">
+              “Bersama dalam kebersamaan, menuju keluarga yang lebih harmonis”
+            </p>
+          </div>
+
+          <!-- Admin Action Toolbar (Admin Only) -->
+          <div id="admin-toolbar" class="hidden flex-wrap items-center gap-2 shrink-0">
+            <button
+              onclick="tambahAnggotaPrompt()"
+              class="inline-flex items-center gap-1.5 bg-[#082447] hover:bg-[#0f3666] text-white px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer whitespace-nowrap"
+            >
+              <span>+</span>
+              <span>Tambah Anggota</span>
+            </button>
+
+            <button
+              id="btn-kocok-arisan"
+              onclick="kocokArisan()"
+              class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer whitespace-nowrap"
+            >
+              <span id="icon-kocok-btn">🎲</span>
+              <span id="text-kocok-btn">Kocok Sekarang</span>
+            </button>
+
+            <button
+              onclick="bukaModalPutaran()"
+              class="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer whitespace-nowrap"
+            >
+              <span>↻</span>
+              <span>Putaran Baru</span>
+            </button>
+
+            <button
+              id="btn-reset-putaran"
+              onclick="bukaModalReset()"
+              title="Reset arisan untuk mulai dari putaran awal (Khusus Admin)"
+              class="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer whitespace-nowrap"
+            >
+              <span>🔄</span>
+              <span>Reset Putaran</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 Top Metric Cards -->
+      <section class="relative z-10 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+        <!-- Card 1: Total Anggota -->
+        <div onclick="switchTab('anggota')" class="bg-white/95 hover:bg-white rounded-2xl border border-white shadow-sm p-4 sm:p-5 flex items-center gap-3.5 transition cursor-pointer">
+          <div class="w-12 h-12 rounded-xl bg-sky-100 text-[#082447] flex items-center justify-center text-xl shrink-0">
+            👥
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold text-slate-500">Total Anggota</p>
+            <p id="stat-total-anggota" class="text-xl sm:text-2xl font-extrabold text-[#082447] tabular-nums leading-tight mt-0.5">
+              0 Anggota
+            </p>
+            <p id="stat-anggota-sub" class="text-[11px] font-semibold text-emerald-600 mt-0.5 tabular-nums truncate">
+              ↑ 0 lunas • 0 belum lunas
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 2: Dana Terkumpul & Saldo Kas -->
+        <div onclick="switchTab('kas')" class="bg-white/95 hover:bg-white rounded-2xl border border-white shadow-sm p-4 sm:p-5 flex items-center gap-3.5 transition cursor-pointer">
+          <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0">
+            👛
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold text-slate-500">Dana Terkumpul</p>
+            <p id="info-terkumpul" class="text-xl sm:text-2xl font-extrabold text-[#082447] tabular-nums leading-tight mt-0.5">
+              Rp 0
+            </p>
+            <p id="info-target" class="text-[11px] font-semibold text-emerald-600 mt-0.5 tabular-nums truncate">
+              Target: Rp 0 (0%)
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 3: Putaran Aktif -->
+        <div class="bg-white/95 rounded-2xl border border-white shadow-sm p-4 sm:p-5 flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl shrink-0">
+            📅
+          </div>
+          <div class="min-w-0">
+            <p id="info-putaran" class="text-lg sm:text-xl font-extrabold text-[#082447] leading-tight truncate">
+              Memuat data...
+            </p>
+            <p id="info-pemenang-ringkas" class="text-xs text-slate-500 mt-0.5 truncate">
+              Pemenang terakhir: -
+            </p>
+            <span class="inline-flex items-center gap-1.5 mt-1 text-xs font-bold text-emerald-600">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>Aktif</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Card 4: Pengingat Acara / Jadwal Kocok -->
+        <div class="bg-white/95 rounded-2xl border border-white shadow-sm p-4 sm:p-5 flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl shrink-0">
+            ⏳
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold text-slate-500">Pengingat Acara</p>
+            <p class="text-sm sm:text-base font-extrabold text-[#082447] leading-snug mt-0.5">
+              Jadwal Undian Arisan
+            </p>
+            <p id="info-tanggal" class="inline-flex items-center gap-1 text-xs text-slate-500 mt-1 truncate">
+              <span>🗓️</span>
+              <span>Menyiapkan jadwal...</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Spin Wheel & Winner Stage -->
+      <div id="box-pemenang" class="relative z-10 hidden bg-white/95 rounded-2xl border border-white shadow-sm p-5 sm:p-6 scroll-mt-28 lg:scroll-mt-20">
+        <div class="flex flex-col items-center justify-center gap-4">
+          <p id="label-pemenang" class="text-xs uppercase tracking-wider font-bold text-emerald-800 bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-full">
+            🏆 Pemenang Putaran Ini
+          </p>
+
+          <div id="wheel-stage" class="relative flex items-center justify-center py-1">
+            <canvas
+              id="wheel-canvas"
+              width="320"
+              height="320"
+              class="w-60 h-60 sm:w-72 sm:h-72 rounded-full shadow-md border-4 border-slate-100"
+            ></canvas>
+
+            <div
+              id="wheel-pointer"
+              class="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 origin-right transition-transform duration-75 drop-shadow-md pointer-events-none"
+            >
+              <svg width="36" height="28" viewBox="0 0 36 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 14L34 3V25L2 14Z" fill="#082447" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <p id="nama-pemenang" class="text-2xl sm:text-3xl font-extrabold text-[#082447] tracking-tight">-</p>
+            <p id="subtext-pemenang" class="text-xs font-medium text-emerald-700 mt-1 hidden">
+              Roda sedang berputar mengundi kandidat...
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Overview Grid: Daftar Anggota (Avatar Strip) + Aktivitas Terbaru -->
+      <section class="relative z-10 grid grid-cols-1 xl:grid-cols-12 gap-4">
+        <!-- Left (7 cols): Daftar Anggota Avatar Card -->
+        <div class="xl:col-span-7 bg-white/95 rounded-2xl border border-white shadow-sm p-4 sm:p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-100">
+              <div class="flex items-center gap-2">
+                <span class="text-base">📢</span>
+                <h2 class="text-base sm:text-lg font-extrabold text-[#082447]">Daftar Anggota</h2>
+                <span id="badge-jumlah-orang" class="bg-sky-100 text-[#082447] text-xs font-bold px-2.5 py-0.5 rounded-full tabular-nums">
+                  0 Orang
+                </span>
+              </div>
+              <button
+                onclick="switchTab('anggota')"
+                class="text-xs font-bold text-[#082447] hover:text-sky-700 transition cursor-pointer whitespace-nowrap"
+              >
+                Lihat Semua Anggota →
+              </button>
+            </div>
+
+            <div id="avatar-strip-anggota" class="grid grid-cols-3 sm:grid-cols-6 gap-3 pt-4">
+              <div class="col-span-full py-6 text-center text-xs text-slate-400">Memuat daftar anggota...</div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+            <span id="preview-lunas-info" class="font-semibold text-slate-600 tabular-nums">0 lunas putaran ini</span>
+            <span id="preview-pemenang-terakhir" class="truncate">Pemenang terakhir: -</span>
+          </div>
+        </div>
+
+        <!-- Right (5 cols): Aktivitas Terbaru -->
+        <div class="xl:col-span-5 bg-white/95 rounded-2xl border border-white shadow-sm p-4 sm:p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-100">
+              <div class="flex items-center gap-2">
+                <span class="text-amber-500 text-base">⚡</span>
+                <h2 class="text-base sm:text-lg font-extrabold text-[#082447]">Aktivitas Terbaru</h2>
+              </div>
+              <button
+                onclick="switchTab('riwayat')"
+                class="text-xs font-bold text-[#082447] hover:text-sky-700 transition cursor-pointer whitespace-nowrap"
+              >
+                Lihat Semua →
+              </button>
+            </div>
+
+            <ul id="list-aktivitas-terbaru" class="divide-y divide-slate-100 mt-1 text-xs">
+              <li class="py-6 text-center text-slate-400">Memuat aktivitas terbaru...</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Grid: Banner Keluarga Besar + Aksi Cepat -->
+      <section class="relative z-10 grid grid-cols-1 xl:grid-cols-12 gap-4">
+        <!-- Left (7 cols): Family Gathering Photo Banner (Locked After Set) -->
+        <div
+          id="family-gathering-banner"
+          class="xl:col-span-7 rounded-2xl overflow-hidden shadow-sm border border-white relative min-h-48 sm:min-h-52 flex items-end justify-between bg-gradient-to-r from-[#061830] via-[#0c2d57] to-emerald-900 text-white p-5 sm:p-6"
+        >
+          <img
+            id="family-gathering-photo"
+            src=""
+            alt="Family Gathering Keluarga Besar Kong Manjul"
+            class="hidden absolute inset-0 w-full h-full object-cover object-center"
+          >
+
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-[#061830]/90 via-[#082447]/35 to-black/20 pointer-events-none"
+          ></div>
+
+          <div class="relative z-10 max-w-md drop-shadow-xs">
+            <p class="font-serif italic text-amber-300 text-base sm:text-lg leading-tight">Keluarga Besar</p>
+            <p class="font-serif italic font-bold text-2xl sm:text-3xl text-white tracking-tight leading-none mt-0.5">
+              Kong Manjul
+            </p>
+            <p class="text-xs text-sky-100 mt-1.5 font-medium">
+              — Satu Keluarga, Sejuta Cerita —
+            </p>
+          </div>
+
+          <div id="banner-photo-controls" class="relative z-10 flex items-center gap-1.5 shrink-0">
+            <input
+              type="file"
+              id="input-foto-banner"
+              accept="image/*"
+              onchange="handleUploadFotoBanner(event)"
+              class="hidden"
+            >
+            <button
+              type="button"
+              onclick="document.getElementById('input-foto-banner').click()"
+              class="inline-flex items-center gap-1 bg-white/90 hover:bg-white text-[#082447] px-2.5 py-1.5 rounded-lg text-xs font-bold shadow-2xs transition cursor-pointer whitespace-nowrap"
+              title="Pasang foto (sekali pasang, tidak dapat diganti lagi)"
+            >
+              <span>📷</span>
+              <span>Pasang Foto</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right (5 cols): Aksi Cepat -->
+        <div class="xl:col-span-5 bg-white/95 rounded-2xl border border-white shadow-sm p-4 sm:p-5 flex flex-col justify-between">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-amber-500 text-sm">✦</span>
+            <h2 class="text-sm sm:text-base font-extrabold text-[#082447]">Aksi Cepat</h2>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <button
+              onclick="switchTab('anggota')"
+              class="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-sky-50/80 hover:bg-sky-100/90 border border-sky-200/70 text-[#082447] transition cursor-pointer"
+            >
+              <span class="w-9 h-9 rounded-lg bg-sky-500 text-white flex items-center justify-center text-base">👥</span>
+              <span class="text-xs font-bold text-center leading-tight">Lihat Anggota</span>
+            </button>
+
+            <button
+              onclick="switchTab('kas')"
+              class="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-emerald-50/80 hover:bg-emerald-100/90 border border-emerald-200/70 text-[#082447] transition cursor-pointer"
+            >
+              <span class="w-9 h-9 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-base">💰</span>
+              <span class="text-xs font-bold text-center leading-tight">Uang Kas</span>
+            </button>
+
+            <button
+              onclick="switchTab('konsumsi')"
+              class="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-indigo-50/80 hover:bg-indigo-100/90 border border-indigo-200/70 text-[#082447] transition cursor-pointer"
+            >
+              <span class="w-9 h-9 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-base">🍱</span>
+              <span class="text-xs font-bold text-center leading-tight">Konsumsi</span>
+            </button>
+
+            <button
+              onclick="switchTab('riwayat')"
+              class="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-amber-50/80 hover:bg-amber-100/90 border border-amber-200/70 text-[#082447] transition cursor-pointer"
+            >
+              <span class="w-9 h-9 rounded-lg bg-amber-500 text-white flex items-center justify-center text-base">🕒</span>
+              <span class="text-xs font-bold text-center leading-tight">Riwayat</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: DAFTAR ANGGOTA LENGKAP ==================== -->
+      <div id="view-anggota-section" class="relative z-10 space-y-5 scroll-mt-28 lg:scroll-mt-20">
+        <section class="bg-white/95 rounded-2xl border border-white shadow-sm overflow-hidden">
+          <div class="px-4 sm:px-6 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 border-b border-slate-100">
+            <div class="flex flex-wrap items-baseline gap-2.5">
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#082447]">
+                Daftar Anggota <span id="label-editable" class="text-slate-500 font-semibold text-sm sm:text-base">(Publik)</span>
+              </h2>
+              <span id="hint-status-klik" class="hidden text-xs text-slate-400">
+                Centang baris atau klik Lunas Semua untuk bayar massal
+              </span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <div id="bulk-payment-controls" class="hidden flex-wrap items-center gap-1.5 mr-1">
+                <button
+                  id="btn-lunas-semua"
+                  onclick="setSemuaLunas(true)"
+                  class="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-2xs transition cursor-pointer whitespace-nowrap"
+                >
+                  <span>✓</span>
+                  <span>Lunas Semua</span>
+                </button>
+
+                <button
+                  id="btn-lunas-terpilih"
+                  onclick="tandaiTerpilihLunas()"
+                  class="inline-flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer whitespace-nowrap"
+                >
+                  <span>☑</span>
+                  <span id="label-lunas-terpilih">Tandai Terpilih (0)</span>
+                </button>
+
+                <button
+                  id="btn-batal-semua"
+                  onclick="setSemuaLunas(false)"
+                  class="inline-flex items-center gap-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-300 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer whitespace-nowrap"
+                >
+                  <span>Reset Lunas</span>
+                </button>
+              </div>
+
+              <span
+                id="info-nominal-iuran"
+                class="inline-flex items-center gap-1.5 bg-sky-50 text-[#082447] border border-sky-200 px-3 py-1 rounded-full text-xs font-bold tabular-nums"
+              >
+                Info Iuran: Rp 0 / orang
+              </span>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50/90 border-b border-slate-200/80 text-xs sm:text-[13px] font-bold text-slate-600">
+                  <th class="py-3 px-4 sm:px-6">
+                    <div class="inline-flex items-center gap-2.5">
+                      <input
+                        type="checkbox"
+                        id="checkbox-select-all"
+                        onchange="toggleSelectAll(this.checked)"
+                        title="Pilih semua anggota"
+                        class="hidden w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                      >
+                      <span>Nama</span>
+                    </div>
+                  </th>
+                  <th class="py-3 px-3 sm:px-4">WhatsApp</th>
+                  <th class="py-3 px-3 sm:px-4 text-center">Status Pembayaran</th>
+                  <th class="py-3 px-4 sm:px-6 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tabel-anggota" class="divide-y divide-slate-100 text-xs sm:text-sm">
+                <tr>
+                  <td colspan="4" class="py-8 px-4 text-center text-slate-400">Memuat data anggota...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="px-4 sm:px-6 py-3 bg-slate-50/70 border-t border-slate-100 text-center text-xs font-medium text-slate-600 tabular-nums" id="footer-anggota-summary">
+            Total lunas: 0 dari 0 anggota
+          </div>
+        </section>
+      </div>
+
+      <!-- ==================== VIEW: RIWAYAT ARISAN ==================== -->
+      <div id="view-riwayat-section" class="relative z-10 hidden space-y-5 scroll-mt-28 lg:scroll-mt-20">
+        <section class="bg-white/95 rounded-2xl border border-white shadow-sm p-4 sm:p-6">
+          <div class="mb-4">
+            <h2 class="text-lg sm:text-xl font-extrabold text-[#082447]">🕒 Riwayat Pemenang Arisan</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Daftar pemenang seluruh putaran arisan yang sudah selesai</p>
+          </div>
+          <ul id="list-riwayat" class="space-y-2.5 text-xs sm:text-sm text-slate-600">
+            <li class="py-4 px-4 rounded-xl bg-slate-50 border border-slate-100 text-slate-400 text-center">
+              Belum ada riwayat pemenang.
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- ==================== VIEW: UANG KAS ==================== -->
+      <div id="view-kas-section" class="relative z-10 hidden space-y-5 scroll-mt-28 lg:scroll-mt-20">
+        <section class="bg-white/95 rounded-2xl border border-white shadow-sm p-4 sm:p-6">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#082447]">💰 Buku Uang Kas</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Pencatatan pemasukan dan pengeluaran kas bersama</p>
+            </div>
+            <button
+              id="btn-tambah-kas"
+              onclick="bukaModalKas()"
+              class="hidden w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer whitespace-nowrap"
+            >
+              <span>+</span>
+              <span>Catat Transaksi Kas</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-4">
+            <div class="bg-emerald-50/70 rounded-xl border border-emerald-200/80 p-4">
+              <p class="text-xs font-bold text-emerald-800">Saldo Kas Saat Ini</p>
+              <p id="kas-saldo" class="text-xl sm:text-2xl font-extrabold text-emerald-700 mt-1 tabular-nums">Rp 0</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl border border-slate-200/90 p-4">
+              <p class="text-xs font-bold text-slate-500">Total Kas Masuk</p>
+              <p id="kas-masuk" class="text-xl sm:text-2xl font-extrabold text-[#082447] mt-1 tabular-nums">Rp 0</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl border border-slate-200/90 p-4">
+              <p class="text-xs font-bold text-slate-500">Total Kas Keluar</p>
+              <p id="kas-keluar" class="text-xl sm:text-2xl font-extrabold text-rose-600 mt-1 tabular-nums">Rp 0</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white/95 rounded-2xl border border-white shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50/90 border-b border-slate-200/80 text-xs sm:text-[13px] font-bold text-slate-600">
+                  <th class="py-3 px-4 sm:px-6">Tanggal</th>
+                  <th class="py-3 px-3 sm:px-4">Keterangan</th>
+                  <th class="py-3 px-3 sm:px-4">Jenis</th>
+                  <th class="py-3 px-3 sm:px-4 text-right">Nominal</th>
+                  <th id="th-kas-aksi" class="hidden py-3 px-4 sm:px-6 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tabel-kas" class="divide-y divide-slate-100 text-xs sm:text-sm">
+                <tr>
+                  <td colspan="5" class="py-8 px-4 text-center text-slate-400">Memuat data uang kas...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- ==================== VIEW: KONSUMSI ==================== -->
+      <div id="view-konsumsi-section" class="relative z-10 hidden space-y-5 scroll-mt-28 lg:scroll-mt-20">
+        <section class="bg-white/95 rounded-2xl border border-white shadow-sm p-4 sm:p-6">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#082447]">🍱 Catatan Konsumsi</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Rekap menu snack, hidangan, porsi, dan biaya konsumsi</p>
+            </div>
+            <button
+              id="btn-tambah-konsumsi"
+              onclick="bukaModalKonsumsi()"
+              class="hidden w-full sm:w-auto inline-flex items-center justify-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-bold shadow-2xs transition cursor-pointer whitespace-nowrap"
+            >
+              <span>+</span>
+              <span>Tambah Konsumsi</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-4">
+            <div class="bg-amber-50/70 rounded-xl border border-amber-200/80 p-4">
+              <p class="text-xs font-bold text-amber-800">Total Biaya Konsumsi</p>
+              <p id="konsumsi-total-biaya" class="text-xl sm:text-2xl font-extrabold text-[#082447] mt-1 tabular-nums">Rp 0</p>
+            </div>
+            <div class="bg-slate-50 rounded-xl border border-slate-200/90 p-4">
+              <p class="text-xs font-bold text-slate-500">Jumlah Item Tercatat</p>
+              <p id="konsumsi-jumlah-item" class="text-xl sm:text-2xl font-extrabold text-[#082447] mt-1 tabular-nums">0</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white/95 rounded-2xl border border-white shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50/90 border-b border-slate-200/80 text-xs sm:text-[13px] font-bold text-slate-600">
+                  <th class="py-3 px-4 sm:px-6">Tanggal</th>
+                  <th class="py-3 px-3 sm:px-4">Item Konsumsi</th>
+                  <th class="py-3 px-3 sm:px-4">Jumlah</th>
+                  <th class="py-3 px-3 sm:px-4 text-right">Biaya</th>
+                  <th id="th-konsumsi-aksi" class="hidden py-3 px-4 sm:px-6 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tabel-konsumsi" class="divide-y divide-slate-100 text-xs sm:text-sm">
+                <tr>
+                  <td colspan="5" class="py-8 px-4 text-center text-slate-400">Memuat data konsumsi...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal Login Admin -->
+  <div id="modal-login" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-bold text-[#082447]">Login Admin</h3>
+          <p class="text-xs text-slate-500">Masuk untuk mengelola data arisan, kas & konsumsi</p>
+        </div>
+        <button onclick="toggleLoginModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none px-1 cursor-pointer">&times;</button>
+      </div>
+
+      <form onsubmit="event.preventDefault(); loginAdmin();" class="space-y-3">
+        <div>
+          <label for="login-email" class="block text-xs font-semibold text-slate-600 mb-1">Username / Email Admin</label>
+          <input
+            type="text"
+            id="login-email"
+            placeholder="rivan123"
+            autocomplete="username"
+            class="w-full border border-slate-300 focus:border-[#082447] focus:ring-2 focus:ring-sky-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition"
+          >
+        </div>
+        <div>
+          <label for="login-password" class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+          <input
+            type="password"
+            id="login-password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            class="w-full border border-slate-300 focus:border-[#082447] focus:ring-2 focus:ring-sky-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition"
+          >
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="toggleLoginModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition cursor-pointer">Batal</button>
+          <button type="submit" class="bg-[#082447] hover:bg-[#0d3566] text-white px-5 py-2 rounded-xl text-sm font-bold shadow-2xs transition cursor-pointer">Masuk</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Buat Putaran Baru -->
+  <div id="modal-putaran" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-bold text-[#082447]">Buat Putaran Baru</h3>
+          <p class="text-xs text-slate-500">Atur nomor putaran, jadwal kocok & iuran</p>
+        </div>
+        <button onclick="document.getElementById('modal-putaran').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl leading-none px-1 cursor-pointer">&times;</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label for="input-putaran-ke" class="block text-xs font-semibold text-slate-600 mb-1">Putaran Ke-</label>
+          <input type="number" id="input-putaran-ke" value="1" min="1" class="w-full border border-slate-300 focus:border-[#082447] focus:ring-2 focus:ring-sky-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+        <div>
+          <label for="input-tanggal" class="block text-xs font-semibold text-slate-600 mb-1">Tanggal Kocok</label>
+          <input type="date" id="input-tanggal" class="w-full border border-slate-300 focus:border-[#082447] focus:ring-2 focus:ring-sky-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+        <div>
+          <label for="input-nominal" class="block text-xs font-semibold text-slate-600 mb-1">Nominal Iuran per Orang (Rp)</label>
+          <input type="number" id="input-nominal" value="100000" min="1000" step="1000" class="w-full border border-slate-300 focus:border-[#082447] focus:ring-2 focus:ring-sky-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="document.getElementById('modal-putaran').classList.add('hidden')" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition cursor-pointer">Batal</button>
+        <button onclick="simpanPutaranBaru()" class="bg-[#082447] hover:bg-[#0d3566] text-white px-5 py-2 rounded-xl text-sm font-bold shadow-2xs transition cursor-pointer">Simpan Putaran</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Reset Putaran (Khusus Admin) -->
+  <div id="modal-reset" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-extrabold text-[#082447]">🔄 Reset Putaran Arisan</h3>
+          <p class="text-xs text-slate-500">Mulai kembali siklus arisan dari Putaran Ke-1</p>
+        </div>
+        <button onclick="document.getElementById('modal-reset').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl leading-none px-1 cursor-pointer">&times;</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label for="reset-tanggal" class="block text-xs font-semibold text-slate-600 mb-1">Tanggal Kocok Putaran Ke-1</label>
+          <input type="date" id="reset-tanggal" class="w-full border border-slate-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+        <div>
+          <label for="reset-nominal" class="block text-xs font-semibold text-slate-600 mb-1">Nominal Iuran per Orang (Rp)</label>
+          <input type="number" id="reset-nominal" min="1000" step="1000" class="w-full border border-slate-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+      </div>
+
+      <div class="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900 space-y-1">
+        <p class="font-bold">Pilih cara reset:</p>
+        <p>1. <strong>Mulai Putaran #1 Baru:</strong> Membuka Putaran Ke-1 baru tanpa menghapus riwayat pemenang lama.</p>
+        <p>2. <strong>Hapus Riwayat & Mulai #1:</strong> Menghapus seluruh riwayat putaran & pembayaran lama agar semua anggota bisa diundi ulang dari awal.</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:justify-between gap-2 pt-2">
+        <button
+          onclick="resetHapusRiwayatDanMulaiSatu()"
+          class="px-3.5 py-2 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition cursor-pointer"
+        >
+          Hapus Riwayat & Mulai #1
+        </button>
+        <div class="flex justify-end gap-2">
+          <button onclick="document.getElementById('modal-reset').classList.add('hidden')" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer">Batal</button>
+          <button onclick="resetKePutaranSatu()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-2xs transition cursor-pointer">Mulai Putaran #1 Baru</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Catat Uang Kas -->
+  <div id="modal-kas" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-bold text-[#082447]">Catat Transaksi Kas</h3>
+          <p class="text-xs text-slate-500">Simpan pemasukan atau pengeluaran kas</p>
+        </div>
+        <button onclick="document.getElementById('modal-kas').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl leading-none px-1 cursor-pointer">&times;</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label for="kas-input-tanggal" class="block text-xs font-semibold text-slate-600 mb-1">Tanggal</label>
+          <input type="date" id="kas-input-tanggal" class="w-full border border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+        <div>
+          <label for="kas-input-jenis" class="block text-xs font-semibold text-slate-600 mb-1">Jenis Transaksi</label>
+          <select id="kas-input-jenis" class="w-full border border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm bg-white transition">
+            <option value="masuk">Kas Masuk (+)</option>
+            <option value="keluar">Kas Keluar (-)</option>
+          </select>
+        </div>
+        <div>
+          <label for="kas-input-keterangan" class="block text-xs font-semibold text-slate-600 mb-1">Keterangan</label>
+          <input type="text" id="kas-input-keterangan" placeholder="Contoh: Dana kas bulanan / Kebersihan" class="w-full border border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+        <div>
+          <label for="kas-input-nominal" class="block text-xs font-semibold text-slate-600 mb-1">Nominal (Rp)</label>
+          <input type="number" id="kas-input-nominal" min="100" step="100" placeholder="50000" class="w-full border border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="document.getElementById('modal-kas').classList.add('hidden')" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition cursor-pointer">Batal</button>
+        <button onclick="simpanTransaksiKas()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-2xs transition cursor-pointer">Simpan Kas</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah Konsumsi -->
+  <div id="modal-konsumsi" class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-bold text-[#082447]">Tambah Konsumsi</h3>
+          <p class="text-xs text-slate-500">Catat menu hidangan, jumlah & biaya</p>
+        </div>
+        <button onclick="document.getElementById('modal-konsumsi').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-xl leading-none px-1 cursor-pointer">&times;</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label for="konsumsi-input-tanggal" class="block text-xs font-semibold text-slate-600 mb-1">Tanggal</label>
+          <input type="date" id="konsumsi-input-tanggal" class="w-full border border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+        <div>
+          <label for="konsumsi-input-item" class="block text-xs font-semibold text-slate-600 mb-1">Item Konsumsi</label>
+          <input type="text" id="konsumsi-input-item" placeholder="Contoh: Nasi kotak & air mineral" class="w-full border border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+        <div>
+          <label for="konsumsi-input-jumlah" class="block text-xs font-semibold text-slate-600 mb-1">Jumlah / Porsi</label>
+          <input type="text" id="konsumsi-input-jumlah" value="15 kotak" placeholder="Contoh: 15 kotak / 2 dus" class="w-full border border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+        <div>
+          <label for="konsumsi-input-biaya" class="block text-xs font-semibold text-slate-600 mb-1">Biaya (Rp)</label>
+          <input type="number" id="konsumsi-input-biaya" min="0" step="100" placeholder="250000" class="w-full border border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none rounded-xl px-3.5 py-2.5 text-sm transition">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="document.getElementById('modal-konsumsi').classList.add('hidden')" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition cursor-pointer">Batal</button>
+        <button onclick="simpanKonsumsi()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-2xs transition cursor-pointer">Simpan Konsumsi</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://lwiwgthcwvjecdbkxunk.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_ymX02E9A5A44vALT2Hj5Zg_LeGkZmFT';
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const BANNER_PHOTO_STORAGE_KEY = 'kong_manjul_banner_photo_locked_v1';
+
+    const ADMIN_USERNAME_ALIASES = {
+      'rivan123': 'rivanmaulana2625@gmail.com'
+    };
+
+    const WHEEL_COLORS = [
+      '#dc2626', '#2563eb', '#16a34a', '#eab308',
+      '#dc2626', '#2563eb', '#16a34a', '#eab308',
+      '#dc2626', '#2563eb'
+    ];
+
+    const AVATAR_TONES = [
+      'bg-sky-100 text-sky-900 border-sky-300',
+      'bg-emerald-100 text-emerald-900 border-emerald-300',
+      'bg-amber-100 text-amber-900 border-amber-300',
+      'bg-indigo-100 text-indigo-900 border-indigo-300',
+      'bg-rose-100 text-rose-900 border-rose-300',
+      'bg-teal-100 text-teal-900 border-teal-300'
+    ];
+
+    let currentTab = 'arisan';
+    let currentUser = null;
+    let activePeriod = null;
+    let allPeriods = [];
+    let allMembers = [];
+    let currentPayments = [];
+    let pastWinnersIds = [];
+    let allCash = [];
+    let allConsumptions = [];
+    let selectedMemberIds = new Set();
+    let isSpinning = false;
+    let isBulkUpdating = false;
+    let isResetting = false;
+    let currentWheelAngle = 0;
+
+    function lockBannerPhotoUI(hasPhoto) {
+      const imgEl = document.getElementById('family-gathering-photo');
+      const controlsEl = document.getElementById('banner-photo-controls');
+      if (!imgEl || !controlsEl) return;
+
+      if (hasPhoto) {
+        imgEl.classList.remove('hidden');
+        controlsEl.classList.add('hidden');
+      } else {
+        imgEl.src = '';
+        imgEl.classList.add('hidden');
+        controlsEl.classList.remove('hidden');
+      }
+    }
+
+    function initBannerPhoto() {
+      try {
+        const saved = localStorage.getItem(BANNER_PHOTO_STORAGE_KEY);
+        if (saved) {
+          document.getElementById('family-gathering-photo').src = saved;
+          lockBannerPhotoUI(true);
+        } else {
+          lockBannerPhotoUI(false);
+        }
+      } catch (_) {
+        lockBannerPhotoUI(false);
+      }
+    }
+
+    function handleUploadFotoBanner(event) {
+      const file = event?.target?.files?.[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        alert('Pilih file gambar (JPG, PNG, atau WEBP).');
+        return;
+      }
+
+      const yakin = confirm('Foto yang sudah dipasang tidak bisa diganti lagi dari tombol halaman. Yakin pasang foto ini?');
+      if (!yakin) {
+        event.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result;
+        if (typeof result !== 'string') return;
+        document.getElementById('family-gathering-photo').src = result;
+        try {
+          localStorage.setItem(BANNER_PHOTO_STORAGE_KEY, result);
+          lockBannerPhotoUI(true);
+        } catch (_) {
+          alert('Ukuran file terlalu besar untuk disimpan di browser. Coba kompres/perkecil ukuran fotonya lalu pasang kembali.');
+          lockBannerPhotoUI(false);
+        }
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+
+    const formatRp = (angka) =>
+      new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+      }).format(angka || 0);
+
+    const formatTanggalIndo = (tglStr) => {
+      if (!tglStr) return '-';
+      const d = new Date(tglStr + 'T00:00:00');
+      if (Number.isNaN(d.getTime())) return tglStr;
+      return d.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    };
+
+    const escapeHtml = (str = '') =>
+      String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+    const getInitials = (nama = '') => {
+      const parts = String(nama).trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return '?';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    };
+
+    function renderAvatarStrip() {
+      const container = document.getElementById('avatar-strip-anggota');
+      const badgeJumlah = document.getElementById('badge-jumlah-orang');
+      if (badgeJumlah) badgeJumlah.innerText = `${allMembers.length} Orang`;
+      if (!container) return;
+
+      if (allMembers.length === 0) {
+        container.innerHTML = `<div class="col-span-full py-6 text-center text-xs text-slate-400">Belum ada anggota terdaftar.</div>`;
+        return;
+      }
+
+      const shown = allMembers.slice(0, 5);
+      const extraCount = Math.max(allMembers.length - shown.length, 0);
+
+      const cards = shown.map((m, idx) => {
+        const tone = AVATAR_TONES[idx % AVATAR_TONES.length];
+        return `
+          <button
+            onclick="switchTab('anggota')"
+            class="flex flex-col items-center gap-1.5 group cursor-pointer text-center"
+            title="${escapeHtml(m.nama)}"
+          >
+            <div class="w-12 h-12 rounded-full border-2 ${tone} flex items-center justify-center font-extrabold text-sm shadow-2xs group-hover:scale-105 transition">
+              ${escapeHtml(getInitials(m.nama))}
+            </div>
+            <span class="text-xs font-semibold text-slate-700 truncate max-w-full">${escapeHtml(m.nama)}</span>
+          </button>
+        `;
+      });
+
+      if (extraCount > 0) {
+        cards.push(`
+          <button
+            onclick="switchTab('anggota')"
+            class="flex flex-col items-center gap-1.5 group cursor-pointer text-center"
+            title="Lihat ${extraCount} anggota lainnya"
+          >
+            <div class="w-12 h-12 rounded-full border-2 border-slate-200 bg-slate-100 text-[#082447] flex items-center justify-center font-extrabold text-sm group-hover:bg-sky-100 transition">
+              +${extraCount}
+            </div>
+            <span class="text-xs font-semibold text-slate-500">Lainnya</span>
+          </button>
+        `);
+      }
+
+      container.innerHTML = cards.join('');
+    }
+
+    function renderAktivitasTerbaru() {
+      const listEl = document.getElementById('list-aktivitas-terbaru');
+      if (!listEl) return;
+
+      const activities = [];
+
+      allPeriods.slice(0, 2).forEach(p => {
+        if (p.pemenang_id) {
+          activities.push({
+            timeLabel: formatTanggalIndo(p.tanggal_kocok),
+            iconBg: 'bg-amber-100 text-amber-700',
+            icon: '🏆',
+            text: `Pemenang Putaran #${p.putaran_ke}: <strong>${escapeHtml(p.members?.nama || '-')}</strong>`
+          });
+        } else {
+          activities.push({
+            timeLabel: formatTanggalIndo(p.tanggal_kocok),
+            iconBg: 'bg-sky-100 text-sky-700',
+            icon: '📅',
+            text: `Putaran arisan ke-${p.putaran_ke} aktif (${escapeHtml(formatRp(p.nominal_iuran))})`
+          });
+        }
+      });
+
+      allCash.slice(0, 2).forEach(c => {
+        const masuk = c.jenis === 'masuk';
+        activities.push({
+          timeLabel: formatTanggalIndo(c.tanggal),
+          iconBg: masuk ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700',
+          icon: masuk ? '↑' : '↓',
+          text: `${masuk ? 'Kas masuk' : 'Kas keluar'} <strong>${escapeHtml(formatRp(c.nominal))}</strong> — ${escapeHtml(c.keterangan)}`
+        });
+      });
+
+      allConsumptions.slice(0, 1).forEach(item => {
+        activities.push({
+          timeLabel: formatTanggalIndo(item.tanggal),
+          iconBg: 'bg-indigo-100 text-indigo-700',
+          icon: '🍱',
+          text: `Konsumsi <strong>${escapeHtml(item.item_konsumsi)}</strong> (${escapeHtml(formatRp(item.biaya))})`
+        });
+      });
+
+      if (activities.length === 0) {
+        listEl.innerHTML = `<li class="py-6 text-center text-slate-400">Belum ada aktivitas tercatat.</li>`;
+        return;
+      }
+
+      listEl.innerHTML = activities.slice(0, 4).map(act => `
+        <li class="py-2.5 flex items-center justify-between gap-3">
+          <div class="flex items-start gap-2.5 min-w-0">
+            <span class="w-6 h-6 rounded-full ${act.iconBg} flex items-center justify-center text-[11px] font-extrabold shrink-0 mt-0.5">
+              ${act.icon}
+            </span>
+            <p class="text-slate-700 leading-snug line-clamp-2">${act.text}</p>
+          </div>
+          <span class="text-[11px] text-slate-400 whitespace-nowrap shrink-0">${escapeHtml(act.timeLabel)}</span>
+        </li>
+      `).join('');
+    }
+
+    function bukaModalReset() {
+      if (!currentUser) return alert('Hanya Admin yang dapat melakukan reset putaran.');
+      const tglInput = document.getElementById('reset-tanggal');
+      const nomInput = document.getElementById('reset-nominal');
+      if (tglInput) {
+        tglInput.value = new Date().toISOString().split('T')[0];
+      }
+      if (nomInput) {
+        nomInput.value = activePeriod?.nominal_iuran || 100000;
+      }
+      document.getElementById('modal-reset').classList.remove('hidden');
+    }
+
+    function readResetFormValues() {
+      const tanggal_kocok = document.getElementById('reset-tanggal')?.value || '';
+      const nominal_iuran = parseInt(document.getElementById('reset-nominal')?.value, 10);
+      if (!tanggal_kocok) {
+        alert('Tanggal kocok wajib diisi!');
+        return null;
+      }
+      if (!nominal_iuran || nominal_iuran <= 0) {
+        alert('Nominal iuran harus lebih dari 0!');
+        return null;
+      }
+      return { tanggal_kocok, nominal_iuran };
+    }
+
+    async function resetKePutaranSatu() {
+      if (!currentUser || isResetting) return;
+      const formVal = readResetFormValues();
+      if (!formVal) return;
+
+      if (!confirm('Mulai Putaran Ke-1 baru? Riwayat pemenang lama tetap tersimpan.')) return;
+
+      isResetting = true;
+      try {
+        const { error } = await db.from('periods').insert([{
+          putaran_ke: 1,
+          tanggal_kocok: formVal.tanggal_kocok,
+          nominal_iuran: formVal.nominal_iuran
+        }]);
+        if (error) throw error;
+
+        selectedMemberIds.clear();
+        currentWheelAngle = 0;
+        document.getElementById('modal-reset').classList.add('hidden');
+        await loadData();
+      } catch (err) {
+        alert('Gagal mereset putaran: ' + (err?.message || err));
+      } finally {
+        isResetting = false;
+      }
+    }
+
+    async function resetHapusRiwayatDanMulaiSatu() {
+      if (!currentUser || isResetting) return;
+      const formVal = readResetFormValues();
+      if (!formVal) return;
+
+      const yakin1 = confirm('PERINGATAN: Ini akan menghapus SEMUA riwayat putaran & status pembayaran lama. Lanjutkan?');
+      if (!yakin1) return;
+      const yakin2 = confirm('Konfirmasi terakhir: Yakin hapus seluruh riwayat arisan dan mulai bersih dari Putaran Ke-1?');
+      if (!yakin2) return;
+
+      isResetting = true;
+      try {
+        const periodIds = allPeriods.map(p => p.id).filter(Boolean);
+        if (periodIds.length > 0) {
+          const { error: errPay } = await db.from('payments').delete().in('period_id', periodIds);
+          if (errPay) throw errPay;
+
+          const { error: errPer } = await db.from('periods').delete().in('id', periodIds);
+          if (errPer) throw errPer;
+        }
+
+        const { error: errNew } = await db.from('periods').insert([{
+          putaran_ke: 1,
+          tanggal_kocok: formVal.tanggal_kocok,
+          nominal_iuran: formVal.nominal_iuran
+        }]);
+        if (errNew) throw errNew;
+
+        selectedMemberIds.clear();
+        currentWheelAngle = 0;
+        document.getElementById('modal-reset').classList.add('hidden');
+        await loadData();
+      } catch (err) {
+        alert('Gagal mereset riwayat putaran: ' + (err?.message || err));
+      } finally {
+        isResetting = false;
+      }
+    }
+
+    function syncSelectedCountUI() {
+      const validIds = new Set(allMembers.map(m => String(m.id)));
+      selectedMemberIds = new Set([...selectedMemberIds].filter(id => validIds.has(id)));
+
+      const count = selectedMemberIds.size;
+      const labelEl = document.getElementById('label-lunas-terpilih');
+      const btnTerpilih = document.getElementById('btn-lunas-terpilih');
+      const selectAllCheckbox = document.getElementById('checkbox-select-all');
+
+      if (labelEl) labelEl.innerText = `Tandai Terpilih (${count})`;
+      if (btnTerpilih) {
+        btnTerpilih.disabled = isBulkUpdating || !activePeriod || count === 0;
+        btnTerpilih.classList.toggle('opacity-50', btnTerpilih.disabled);
+      }
+
+      if (selectAllCheckbox) {
+        const total = allMembers.length;
+        selectAllCheckbox.checked = total > 0 && count === total;
+        selectAllCheckbox.indeterminate = count > 0 && count < total;
+      }
+    }
+
+    function toggleSelectAll(checked) {
+      if (checked) {
+        selectedMemberIds = new Set(allMembers.map(m => String(m.id)));
+      } else {
+        selectedMemberIds.clear();
+      }
+      renderTabelAnggota();
+    }
+
+    function toggleSelectMember(memberId, checked) {
+      const key = String(memberId);
+      if (checked) {
+        selectedMemberIds.add(key);
+      } else {
+        selectedMemberIds.delete(key);
+      }
+      syncSelectedCountUI();
+    }
+
+    async function applyPaymentStatusToMemberIds(memberIds, statusBayar) {
+      if (!activePeriod) return alert('Buat putaran baru dulu!');
+      if (!memberIds || memberIds.length === 0) return;
+      if (isBulkUpdating) return;
+
+      isBulkUpdating = true;
+      syncSelectedCountUI();
+
+      try {
+        const nowIso = statusBayar ? new Date().toISOString() : null;
+        const existingMap = new Map(currentPayments.map(p => [String(p.member_id), p]));
+
+        const toUpdate = [];
+        const toInsert = [];
+
+        memberIds.forEach(rawId => {
+          const idStr = String(rawId);
+          const existing = existingMap.get(idStr);
+          if (existing) {
+            toUpdate.push({
+              id: existing.id,
+              period_id: existing.period_id,
+              member_id: existing.member_id,
+              status_bayar: statusBayar,
+              tanggal_bayar: nowIso
+            });
+          } else {
+            toInsert.push({
+              period_id: activePeriod.id,
+              member_id: rawId,
+              status_bayar: statusBayar,
+              tanggal_bayar: nowIso
+            });
+          }
+        });
+
+        if (toUpdate.length > 0) {
+          const { error: errUpd } = await db
+            .from('payments')
+            .upsert(toUpdate, { onConflict: 'id' });
+          if (errUpd) throw errUpd;
+        }
+
+        if (toInsert.length > 0) {
+          const { error: errIns } = await db
+            .from('payments')
+            .insert(toInsert);
+          if (errIns) throw errIns;
+        }
+
+        await loadData();
+      } catch (err) {
+        alert('Gagal memperbarui status pembayaran: ' + (err?.message || err));
+      } finally {
+        isBulkUpdating = false;
+        syncSelectedCountUI();
+      }
+    }
+
+    async function setSemuaLunas(statusBayar) {
+      if (!activePeriod) return alert('Buat putaran baru dulu!');
+      if (allMembers.length === 0) return alert('Belum ada anggota terdaftar!');
+
+      const pesan = statusBayar
+        ? `Tandai SEMUA (${allMembers.length} anggota) sebagai LUNAS pada Putaran Ke-${activePeriod.putaran_ke}?`
+        : `Reset status pembayaran SEMUA (${allMembers.length} anggota) menjadi BELUM LUNAS pada Putaran Ke-${activePeriod.putaran_ke}?`;
+
+      if (!confirm(pesan)) return;
+      await applyPaymentStatusToMemberIds(allMembers.map(m => m.id), statusBayar);
+    }
+
+    async function tandaiTerpilihLunas() {
+      if (!activePeriod) return alert('Buat putaran baru dulu!');
+      const ids = [...selectedMemberIds];
+      if (ids.length === 0) return alert('Centang minimal satu anggota terlebih dahulu.');
+      await applyPaymentStatusToMemberIds(ids, true);
+    }
+
+    function getWheelPoolForPeriod(period) {
+      const excludedIds = new Set(
+        pastWinnersIds.filter(id => id && id !== period?.pemenang_id)
+      );
+      let pool = allMembers.filter(m => !excludedIds.has(m.id));
+      if (period?.pemenang_id && !pool.some(m => m.id === period.pemenang_id)) {
+        const winnerObj = allMembers.find(m => m.id === period.pemenang_id) || {
+          id: period.pemenang_id,
+          nama: period.members?.nama || 'Pemenang'
+        };
+        pool = [...pool, winnerObj];
+      }
+      return pool;
+    }
+
+    function getAnglePointingIndexToRight(index, count) {
+      if (!count || count <= 0 || index < 0) return 0;
+      const twoPi = Math.PI * 2;
+      const sliceAngle = twoPi / count;
+      const centerOffset = (index + 0.5) * sliceAngle;
+      return (((0 - centerOffset) % twoPi) + twoPi) % twoPi;
+    }
+
+    function getPointerCandidateIndex(rotationRad, count) {
+      if (!count || count <= 0) return -1;
+      const twoPi = Math.PI * 2;
+      const sliceAngle = twoPi / count;
+      const normalizedAngle = (((0 - rotationRad) % twoPi) + twoPi) % twoPi;
+      return Math.floor(normalizedAngle / sliceAngle) % count;
+    }
+
+    function drawWheel(candidates, rotationRad = 0, highlightIdx = -1) {
+      const canvas = document.getElementById('wheel-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const radius = Math.min(cx, cy) - 6;
+
+      ctx.clearRect(0, 0, w, h);
+
+      if (!candidates || candidates.length === 0) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fill();
+        ctx.fillStyle = '#475569';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Tidak ada kandidat', cx, cy);
+        return;
+      }
+
+      const sliceAngle = (Math.PI * 2) / candidates.length;
+
+      candidates.forEach((person, idx) => {
+        const startAngle = rotationRad + idx * sliceAngle;
+        const endAngle = startAngle + sliceAngle;
+        const baseColor = WHEEL_COLORS[idx % WHEEL_COLORS.length];
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = baseColor;
+        ctx.fill();
+
+        ctx.lineWidth = idx === highlightIdx ? 4 : 1.5;
+        ctx.strokeStyle = idx === highlightIdx ? '#ffffff' : 'rgba(255,255,255,0.45)';
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(startAngle + sliceAngle / 2);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = baseColor === '#eab308' ? '#0f172a' : '#ffffff';
+        const fontSize = candidates.length > 10 ? 12 : 14;
+        ctx.font = `bold ${fontSize}px Inter, system-ui, sans-serif`;
+        const label = person.nama.length > 14 ? person.nama.slice(0, 13) + '…' : person.nama;
+        ctx.fillText(label, radius - 18, 0);
+        ctx.restore();
+      });
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 24, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.stroke();
+    }
+
+    function switchTab(tabName) {
+      currentTab = tabName;
+
+      const showAnggotaTable = tabName === 'arisan' || tabName === 'anggota';
+      document.getElementById('view-anggota-section').classList.toggle('hidden', !showAnggotaTable);
+      document.getElementById('view-riwayat-section').classList.toggle('hidden', tabName !== 'riwayat');
+      document.getElementById('view-kas-section').classList.toggle('hidden', tabName !== 'kas');
+      document.getElementById('view-konsumsi-section').classList.toggle('hidden', tabName !== 'konsumsi');
+
+      const allNavKeys = ['arisan', 'anggota', 'riwayat', 'kas', 'konsumsi'];
+      allNavKeys.forEach(key => {
+        const sBtn = document.getElementById(`snav-${key}`);
+        if (sBtn) {
+          sBtn.className = key === tabName
+            ? 'snav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-bold bg-amber-400 text-slate-950 shadow-2xs transition cursor-pointer text-left'
+            : 'snav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-sky-100/90 hover:bg-white/10 hover:text-white transition cursor-pointer text-left';
+        }
+
+        const mBtn = document.getElementById(`mnav-${key}`);
+        if (mBtn) {
+          mBtn.className = key === tabName
+            ? 'mnav-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-slate-950 whitespace-nowrap cursor-pointer'
+            : 'mnav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-sky-100 hover:bg-white/10 whitespace-nowrap cursor-pointer';
+        }
+      });
+
+      const targetMap = {
+        arisan: 'workspace-top',
+        anggota: 'view-anggota-section',
+        riwayat: 'view-riwayat-section',
+        kas: 'view-kas-section',
+        konsumsi: 'view-konsumsi-section'
+      };
+
+      const targetEl = document.getElementById(targetMap[tabName]);
+      if (targetEl) {
+        requestAnimationFrame(() => {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    }
+
+    async function init() {
+      initBannerPhoto();
+      const { data: { session } } = await db.auth.getSession();
+      updateUIAuth(session?.user || null);
+      await loadData();
+    }
+
+    function updateUIAuth(user) {
+      currentUser = user;
+      const isAdmin = !!user;
+
+      document.getElementById('btn-login-modal').classList.toggle('hidden', isAdmin);
+      document.getElementById('btn-logout').classList.toggle('hidden', !isAdmin);
+      document.getElementById('admin-toolbar').classList.toggle('hidden', !isAdmin);
+      document.getElementById('admin-toolbar').classList.toggle('flex', isAdmin);
+      document.getElementById('bulk-payment-controls').classList.toggle('hidden', !isAdmin);
+      document.getElementById('bulk-payment-controls').classList.toggle('flex', isAdmin);
+      document.getElementById('checkbox-select-all').classList.toggle('hidden', !isAdmin);
+      document.getElementById('btn-tambah-kas').classList.toggle('hidden', !isAdmin);
+      document.getElementById('btn-tambah-konsumsi').classList.toggle('hidden', !isAdmin);
+      document.getElementById('th-kas-aksi').classList.toggle('hidden', !isAdmin);
+      document.getElementById('th-konsumsi-aksi').classList.toggle('hidden', !isAdmin);
+      document.getElementById('hint-status-klik').classList.toggle('hidden', !isAdmin);
+      if (!isAdmin) {
+        document.getElementById('modal-reset').classList.add('hidden');
+      }
+
+      document.getElementById('banner-mode-title').innerText = isAdmin
+        ? 'Mode: ADMIN — Bisa Ngatur Semua'
+        : 'Mode: PUBLIK — Pantau Data Real-time';
+      document.getElementById('session-pill-text').innerText = isAdmin ? 'ADMIN' : 'PUBLIK';
+      document.getElementById('page-role-badge').innerText = isAdmin ? 'ADMIN' : 'PUBLIK';
+      document.getElementById('label-editable').innerText = isAdmin ? '(Editable)' : '(Publik)';
+
+      renderTabelAnggota();
+      renderTabelKas();
+      renderTabelKonsumsi();
+    }
+
+    async function loadData() {
+      const { data: members } = await db.from('members').select('*').order('nama', { ascending: true });
+      allMembers = members || [];
+      renderAvatarStrip();
+
+      const { data: periods } = await db.from('periods').select('*, members(nama)').order('created_at', { ascending: false });
+      allPeriods = periods || [];
+      pastWinnersIds = allPeriods.filter(p => p.pemenang_id).map(p => p.pemenang_id);
+
+      const selesai = allPeriods.filter(p => p.pemenang_id);
+      const listRiwayat = document.getElementById('list-riwayat');
+
+      if (selesai.length > 0) {
+        const lastWin = selesai[0];
+        const winName = lastWin.members?.nama || '-';
+        document.getElementById('info-pemenang-ringkas').innerText = `Pemenang terakhir: ${winName}`;
+        document.getElementById('preview-pemenang-terakhir').innerText =
+          `Pemenang terakhir: ${winName} (Putaran #${lastWin.putaran_ke})`;
+
+        listRiwayat.innerHTML = selesai.map(p => `
+          <li class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1.5 bg-slate-50/90 hover:bg-slate-100/80 px-4 py-3 rounded-xl border border-slate-200/80 transition">
+            <span class="text-slate-600">
+              <strong class="text-[#082447]">Putaran #${escapeHtml(p.putaran_ke)}</strong>
+              <span class="text-xs text-slate-400 ml-1.5">(${escapeHtml(formatTanggalIndo(p.tanggal_kocok))})</span>
+            </span>
+            <span class="inline-flex items-center gap-1.5 font-bold text-emerald-800 bg-emerald-100/80 px-3 py-1 rounded-full text-xs w-fit">
+              <span>🏆</span>
+              <span>${escapeHtml(p.members?.nama || '-')}</span>
+            </span>
+          </li>
+        `).join('');
+      } else {
+        document.getElementById('info-pemenang-ringkas').innerText = 'Pemenang terakhir: -';
+        document.getElementById('preview-pemenang-terakhir').innerText = 'Pemenang terakhir: -';
+        listRiwayat.innerHTML = `
+          <li class="py-4 px-4 rounded-xl bg-slate-50 border border-slate-100 text-slate-400 text-center">
+            Belum ada riwayat pemenang.
+          </li>
+        `;
+      }
+
+      activePeriod = allPeriods.length > 0 ? allPeriods[0] : null;
+      document.getElementById('stat-total-anggota').innerText = `${allMembers.length} Anggota`;
+
+      if (!activePeriod) {
+        document.getElementById('info-putaran').innerText = 'Belum Ada Putaran';
+        document.getElementById('info-tanggal').innerHTML = '<span>🗓️</span><span>Buat putaran baru untuk memulai</span>';
+        document.getElementById('info-terkumpul').innerText = formatRp(0);
+        document.getElementById('info-target').innerText = 'Target: Rp 0 (0%)';
+        document.getElementById('info-nominal-iuran').innerText = 'Info Iuran: Rp 0 / orang';
+        document.getElementById('stat-anggota-sub').innerText = `0 lunas • ${allMembers.length} belum lunas`;
+        document.getElementById('preview-lunas-info').innerText = `0 dari ${allMembers.length} lunas`;
+        document.getElementById('footer-anggota-summary').innerText = `Total lunas: 0 dari ${allMembers.length} anggota`;
+        if (!isSpinning) {
+          document.getElementById('box-pemenang').classList.add('hidden');
+        }
+        renderTabelAnggota();
+      } else {
+        document.getElementById('info-putaran').innerText = `Putaran Ke-${activePeriod.putaran_ke}`;
+        document.getElementById('info-tanggal').innerHTML =
+          `<span>🗓️</span><span>${escapeHtml(formatTanggalIndo(activePeriod.tanggal_kocok))}</span>`;
+        document.getElementById('info-nominal-iuran').innerText =
+          `Info Iuran: ${formatRp(activePeriod.nominal_iuran)} / orang`;
+
+        const boxPemenang = document.getElementById('box-pemenang');
+        const labelPemenang = document.getElementById('label-pemenang');
+        const subtextPemenang = document.getElementById('subtext-pemenang');
+
+        if (!isSpinning) {
+          if (activePeriod.pemenang_id) {
+            boxPemenang.classList.remove('hidden');
+            boxPemenang.classList.add('winner-highlight');
+            subtextPemenang.classList.add('hidden');
+            labelPemenang.innerText = '🏆 Pemenang Putaran Ini';
+
+            const winnerMember = allMembers.find(m => m.id === activePeriod.pemenang_id);
+            const actualWinnerName = activePeriod.members?.nama || winnerMember?.nama || 'Terpilih';
+            document.getElementById('nama-pemenang').innerText = actualWinnerName;
+
+            const pool = getWheelPoolForPeriod(activePeriod);
+            const winnerIdx = pool.findIndex(m => m.id === activePeriod.pemenang_id);
+            const alignedAngle = winnerIdx >= 0
+              ? getAnglePointingIndexToRight(winnerIdx, pool.length)
+              : currentWheelAngle;
+            currentWheelAngle = alignedAngle;
+            drawWheel(pool, alignedAngle, winnerIdx);
+          } else {
+            boxPemenang.classList.add('hidden');
+            boxPemenang.classList.remove('winner-highlight');
+          }
+        }
+
+        const { data: payments } = await db.from('payments').select('*').eq('period_id', activePeriod.id);
+        currentPayments = payments || [];
+
+        const lunasMemberIds = new Set(currentPayments.filter(p => p.status_bayar).map(p => p.member_id));
+        const jumlahLunas = allMembers.filter(m => lunasMemberIds.has(m.id)).length;
+        const jumlahBelumBayar = Math.max(allMembers.length - jumlahLunas, 0);
+
+        const terkumpul = jumlahLunas * activePeriod.nominal_iuran;
+        const target = allMembers.length * activePeriod.nominal_iuran;
+        const persen = target > 0 ? Math.min(Math.round((terkumpul / target) * 100), 100) : 0;
+
+        document.getElementById('info-terkumpul').innerText = formatRp(terkumpul);
+        document.getElementById('info-target').innerText = `↑ Target: ${formatRp(target)} (${persen}%)`;
+        document.getElementById('stat-anggota-sub').innerText = `↑ ${jumlahLunas} lunas • ${jumlahBelumBayar} belum lunas`;
+        document.getElementById('preview-lunas-info').innerText = `${jumlahLunas} dari ${allMembers.length} anggota lunas`;
+
+        const siapStatus = allMembers.length > 0 && jumlahLunas === allMembers.length
+          ? ' • Semua sudah lunas!'
+          : ' • Pantau pembayaran anggota';
+        document.getElementById('footer-anggota-summary').innerText =
+          `Total lunas: ${jumlahLunas} dari ${allMembers.length} anggota${siapStatus}`;
+
+        renderTabelAnggota();
+      }
+
+      await loadKasDanKonsumsi();
+      renderAktivitasTerbaru();
+    }
+
+    async function loadKasDanKonsumsi() {
+      const { data: cashRows } = await db
+        .from('cash_transactions')
+        .select('*')
+        .order('tanggal', { ascending: false })
+        .order('created_at', { ascending: false });
+      allCash = cashRows || [];
+
+      const totalMasuk = allCash.filter(c => c.jenis === 'masuk').reduce((acc, c) => acc + Number(c.nominal || 0), 0);
+      const totalKeluar = allCash.filter(c => c.jenis === 'keluar').reduce((acc, c) => acc + Number(c.nominal || 0), 0);
+      document.getElementById('kas-saldo').innerText = formatRp(totalMasuk - totalKeluar);
+      document.getElementById('kas-masuk').innerText = formatRp(totalMasuk);
+      document.getElementById('kas-keluar').innerText = formatRp(totalKeluar);
+      renderTabelKas();
+
+      const { data: consRows } = await db
+        .from('consumptions')
+        .select('*')
+        .order('tanggal', { ascending: false })
+        .order('created_at', { ascending: false });
+      allConsumptions = consRows || [];
+
+      const totalBiayaKonsumsi = allConsumptions.reduce((acc, item) => acc + Number(item.biaya || 0), 0);
+      document.getElementById('konsumsi-total-biaya').innerText = formatRp(totalBiayaKonsumsi);
+      document.getElementById('konsumsi-jumlah-item').innerText = allConsumptions.length;
+      renderTabelKonsumsi();
+    }
+
+    function renderTabelAnggota() {
+      const tbody = document.getElementById('tabel-anggota');
+      if (allMembers.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="py-8 px-4 text-center text-slate-400">
+              Belum ada anggota terdaftar. Klik <strong>+ Tambah Anggota</strong> untuk mulai mengisi peserta.
+            </td>
+          </tr>
+        `;
+        syncSelectedCountUI();
+        return;
+      }
+
+      tbody.innerHTML = allMembers.map(member => {
+        const pay = currentPayments.find(p => p.member_id === member.id);
+        const isLunas = pay ? Boolean(pay.status_bayar) : false;
+        const sudahMenang = pastWinnersIds.includes(member.id);
+        const isChecked = selectedMemberIds.has(String(member.id));
+
+        const badgeMenang = sudahMenang
+          ? `<span class="ml-1.5 inline-flex items-center bg-amber-50 text-amber-800 border border-amber-200/80 px-2 py-0.5 rounded-full text-[10px] font-semibold">👑 Pernah Menang</span>`
+          : '';
+
+        const checkboxHtml = currentUser
+          ? `<input
+               type="checkbox"
+               ${isChecked ? 'checked' : ''}
+               onchange="toggleSelectMember('${member.id}', this.checked)"
+               class="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer shrink-0"
+             >`
+          : '';
+
+        let statusCell = '<span class="text-xs text-slate-400">Menunggu putaran</span>';
+        if (activePeriod) {
+          if (currentUser) {
+            statusCell = isLunas
+              ? `<button onclick="toggleBayar('${member.id}', true)" title="Klik untuk ubah status" class="inline-flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-2xs transition cursor-pointer whitespace-nowrap">Lunas ✓</button>`
+              : `<button onclick="toggleBayar('${member.id}', false)" title="Klik untuk ubah status" class="inline-flex items-center gap-1 bg-white hover:bg-amber-50 text-amber-600 border border-amber-400 px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer whitespace-nowrap">Belum Lunas</button>`;
+          } else {
+            statusCell = isLunas
+              ? `<span class="inline-flex items-center gap-1 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">Lunas ✓</span>`
+              : `<span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-300 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">Belum Lunas</span>`;
+          }
+        }
+
+        let aksiCell = '<span class="text-xs text-slate-400">-</span>';
+        if (currentUser) {
+          const items = [];
+          if (activePeriod && !isLunas && member.no_hp) {
+            const pesanWA = encodeURIComponent(
+              `Halo ${member.nama}, sekadar mengingatkan iuran arisan keluarga putaran ke-${activePeriod.putaran_ke} sebesar ${formatRp(activePeriod.nominal_iuran)} ya. Terima kasih!`
+            );
+            items.push(`
+              <a
+                href="https://wa.me/${escapeHtml(member.no_hp)}?text=${pesanWA}"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Kirim pengingat WA"
+                class="inline-flex items-center justify-center bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-lg text-xs font-bold transition"
+              >
+                WA
+              </a>
+            `);
+          }
+
+          items.push(`
+            <button
+              onclick="hapusAnggota('${member.id}', '${escapeHtml(member.nama).replace(/'/g, "\\'")}')"
+              title="Hapus anggota"
+              class="inline-flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+            >
+              🗑️
+            </button>
+          `);
+
+          aksiCell = `<div class="inline-flex items-center justify-end gap-1.5">${items.join('')}</div>`;
+        }
+
+        return `
+          <tr class="hover:bg-slate-50/90 transition ${isChecked && currentUser ? 'bg-emerald-50/35' : ''}">
+            <td class="py-3.5 px-4 sm:px-6 font-bold text-slate-900">
+              <div class="inline-flex items-center gap-2.5 flex-wrap">
+                ${checkboxHtml}
+                <span>${escapeHtml(member.nama)}</span>
+                ${badgeMenang}
+              </div>
+            </td>
+            <td class="py-3.5 px-3 sm:px-4 text-slate-600 whitespace-nowrap tabular-nums">
+              ${escapeHtml(member.no_hp || '-')}
+            </td>
+            <td class="py-3.5 px-3 sm:px-4 text-center">
+              ${statusCell}
+            </td>
+            <td class="py-3.5 px-4 sm:px-6 text-right">
+              ${aksiCell}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      syncSelectedCountUI();
+    }
+
+    function renderTabelKas() {
+      const tbody = document.getElementById('tabel-kas');
+      const isAdmin = Boolean(currentUser);
+      const colSpan = isAdmin ? 5 : 4;
+
+      if (!allCash || allCash.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" class="py-8 px-4 text-center text-slate-400">Belum ada transaksi uang kas tercatat.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = allCash.map(row => {
+        const isMasuk = row.jenis === 'masuk';
+        const badgeJenis = isMasuk
+          ? `<span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap">↑ Masuk</span>`
+          : `<span class="inline-flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200/80 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap">↓ Keluar</span>`;
+
+        const aksiCell = isAdmin
+          ? `<td class="py-3 px-4 sm:px-6 text-right">
+               <button onclick="hapusTransaksiKas('${row.id}')" title="Hapus" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer">🗑️</button>
+             </td>`
+          : '';
+
+        return `
+          <tr class="hover:bg-slate-50/90 transition">
+            <td class="py-3 px-4 sm:px-6 text-slate-500 whitespace-nowrap tabular-nums">${escapeHtml(formatTanggalIndo(row.tanggal))}</td>
+            <td class="py-3 px-3 sm:px-4 font-semibold text-slate-900">${escapeHtml(row.keterangan)}</td>
+            <td class="py-3 px-3 sm:px-4 whitespace-nowrap">${badgeJenis}</td>
+            <td class="py-3 px-3 sm:px-4 text-right whitespace-nowrap tabular-nums font-bold ${isMasuk ? 'text-emerald-700' : 'text-rose-600'}">${isMasuk ? '+' : '-'}${formatRp(row.nominal)}</td>
+            ${aksiCell}
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderTabelKonsumsi() {
+      const tbody = document.getElementById('tabel-konsumsi');
+      const isAdmin = Boolean(currentUser);
+      const colSpan = isAdmin ? 5 : 4;
+
+      if (!allConsumptions || allConsumptions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${colSpan}" class="py-8 px-4 text-center text-slate-400">Belum ada data konsumsi tercatat.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = allConsumptions.map(item => {
+        const aksiCell = isAdmin
+          ? `<td class="py-3 px-4 sm:px-6 text-right">
+               <button onclick="hapusKonsumsi('${item.id}')" title="Hapus" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer">🗑️</button>
+             </td>`
+          : '';
+
+        return `
+          <tr class="hover:bg-slate-50/90 transition">
+            <td class="py-3 px-4 sm:px-6 text-slate-500 whitespace-nowrap tabular-nums">${escapeHtml(formatTanggalIndo(item.tanggal))}</td>
+            <td class="py-3 px-3 sm:px-4 font-semibold text-slate-900">${escapeHtml(item.item_konsumsi)}</td>
+            <td class="py-3 px-3 sm:px-4 text-slate-600 whitespace-nowrap">${escapeHtml(item.jumlah || '-')}</td>
+            <td class="py-3 px-3 sm:px-4 text-right whitespace-nowrap tabular-nums font-bold text-slate-900">${formatRp(item.biaya)}</td>
+            ${aksiCell}
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function toggleLoginModal() {
+      const modal = document.getElementById('modal-login');
+      modal.classList.toggle('hidden');
+      if (!modal.classList.contains('hidden')) {
+        setTimeout(() => document.getElementById('login-email')?.focus(), 50);
+      }
+    }
+
+    function resolveAdminLoginEmail(rawInput) {
+      const cleaned = String(rawInput || '').trim().toLowerCase();
+      if (!cleaned) return '';
+      if (ADMIN_USERNAME_ALIASES[cleaned]) {
+        return ADMIN_USERNAME_ALIASES[cleaned];
+      }
+      return cleaned;
+    }
+
+    async function loginAdmin() {
+      const rawUser = document.getElementById('login-email').value;
+      const email = resolveAdminLoginEmail(rawUser);
+      const password = document.getElementById('login-password').value;
+
+      if (!email) return alert('Masukkan username atau email admin terlebih dahulu!');
+      if (!password) return alert('Masukkan password terlebih dahulu!');
+
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
+      if (error) return alert('Login gagal: ' + error.message);
+      toggleLoginModal();
+      updateUIAuth(data.user);
+    }
+
+    async function logoutAdmin() {
+      selectedMemberIds.clear();
+      await db.auth.signOut();
+      updateUIAuth(null);
+    }
+
+    async function tambahAnggotaPrompt() {
+      const namaInput = prompt('Masukkan Nama Anggota Keluarga:');
+      if (!namaInput || !namaInput.trim()) return;
+      const nama = namaInput.trim();
+      const hpInput = prompt('Masukkan No WA (awal 62, contoh: 628123456789) - Opsional:');
+      const no_hp = hpInput ? hpInput.replace(/\D/g, '') : null;
+
+      const { error } = await db.from('members').insert([{ nama, no_hp: no_hp || null }]);
+      if (error) return alert('Gagal menambah anggota: ' + error.message);
+      await loadData();
+    }
+
+    async function hapusAnggota(memberId, nama) {
+      if (!confirm(`Yakin ingin menghapus anggota "${nama}"?`)) return;
+      const { error } = await db.from('members').delete().eq('id', memberId);
+      if (error) return alert('Gagal menghapus anggota: ' + error.message);
+      selectedMemberIds.delete(String(memberId));
+      await loadData();
+    }
+
+    function bukaModalPutaran() {
+      const nextKe = activePeriod ? activePeriod.putaran_ke + 1 : 1;
+      document.getElementById('input-putaran-ke').value = nextKe;
+      if (!document.getElementById('input-tanggal').value) {
+        document.getElementById('input-tanggal').value = new Date().toISOString().split('T')[0];
+      }
+      document.getElementById('modal-putaran').classList.remove('hidden');
+    }
+
+    async function simpanPutaranBaru() {
+      const putaran_ke = parseInt(document.getElementById('input-putaran-ke').value, 10);
+      const tanggal_kocok = document.getElementById('input-tanggal').value;
+      const nominal_iuran = parseInt(document.getElementById('input-nominal').value, 10);
+
+      if (!tanggal_kocok) return alert('Tanggal kocok wajib diisi!');
+      if (!nominal_iuran || nominal_iuran <= 0) return alert('Nominal iuran harus lebih dari 0!');
+
+      const { error } = await db.from('periods').insert([{ putaran_ke, tanggal_kocok, nominal_iuran }]);
+      if (error) return alert('Gagal membuat putaran: ' + error.message);
+
+      document.getElementById('modal-putaran').classList.add('hidden');
+      await loadData();
+    }
+
+    async function toggleBayar(memberId, statusSekarang) {
+      await applyPaymentStatusToMemberIds([memberId], !statusSekarang);
+    }
+
+    function setSpinButtonState(spinning) {
+      const btn = document.getElementById('btn-kocok-arisan');
+      const icon = document.getElementById('icon-kocok-btn');
+      const text = document.getElementById('text-kocok-btn');
+      if (!btn || !icon || !text) return;
+
+      btn.disabled = spinning;
+      if (spinning) {
+        icon.className = 'inline-block animate-spin';
+        icon.innerText = '🎡';
+        text.innerText = 'Roda Berputar...';
+      } else {
+        icon.className = '';
+        icon.innerText = '🎲';
+        text.innerText = 'Kocok Sekarang';
+      }
+    }
+
+    function animateWheelToWinner(candidates, winnerIndex, onComplete) {
+      const twoPi = Math.PI * 2;
+      const baseTarget = getAnglePointingIndexToRight(winnerIndex, candidates.length);
+      const extraSpins = 6 * twoPi;
+
+      const startAngle = currentWheelAngle;
+      const normalizedStart = ((startAngle % twoPi) + twoPi) % twoPi;
+      let delta = baseTarget - normalizedStart;
+      if (delta < 0) delta += twoPi;
+      const totalDelta = extraSpins + delta;
+
+      const duration = 4200;
+      const startTime = performance.now();
+      let lastSectorIdx = -1;
+      const pointerEl = document.getElementById('wheel-pointer');
+      const namaEl = document.getElementById('nama-pemenang');
+
+      function frame(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const angleNow = startAngle + totalDelta * eased;
+        currentWheelAngle = angleNow;
+
+        const currentIdx = getPointerCandidateIndex(angleNow, candidates.length);
+        if (currentIdx !== -1 && candidates[currentIdx]) {
+          namaEl.innerText = candidates[currentIdx].nama;
+          if (currentIdx !== lastSectorIdx && pointerEl) {
+            lastSectorIdx = currentIdx;
+            pointerEl.style.transform = 'translateY(-50%) rotate(-18deg)';
+            setTimeout(() => {
+              if (pointerEl) pointerEl.style.transform = 'translateY(-50%) rotate(0deg)';
+            }, 60);
+          }
+        }
+
+        drawWheel(candidates, angleNow, t >= 1 ? winnerIndex : currentIdx);
+
+        if (t < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          currentWheelAngle = baseTarget;
+          drawWheel(candidates, baseTarget, winnerIndex);
+          namaEl.innerText = candidates[winnerIndex].nama;
+          onComplete(candidates[winnerIndex]);
+        }
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    async function kocokArisan() {
+      if (isSpinning) return;
+      if (!activePeriod) return alert('Buat putaran baru dulu!');
+      if (activePeriod.pemenang_id) {
+        if (!confirm('Putaran ini sudah ada pemenangnya. Yakin mau kocok ulang?')) return;
+      }
+
+      const kandidat = getWheelPoolForPeriod(activePeriod);
+      if (kandidat.length === 0) {
+        return alert('Semua anggota sudah pernah menang!');
+      }
+
+      const winnerIndex = Math.floor(Math.random() * kandidat.length);
+
+      isSpinning = true;
+      setSpinButtonState(true);
+
+      const boxPemenang = document.getElementById('box-pemenang');
+      const labelPemenang = document.getElementById('label-pemenang');
+      const subtextPemenang = document.getElementById('subtext-pemenang');
+
+      boxPemenang.classList.remove('hidden', 'winner-highlight');
+      boxPemenang.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      subtextPemenang.classList.remove('hidden');
+      labelPemenang.innerText = '🎯 Roda Undian Sedang Berputar';
+
+      drawWheel(kandidat, currentWheelAngle, -1);
+
+      animateWheelToWinner(kandidat, winnerIndex, async (pemenangSah) => {
+        subtextPemenang.classList.add('hidden');
+        labelPemenang.innerText = '🏆 Pemenang Putaran Ini';
+        boxPemenang.classList.add('winner-highlight');
+
+        const { error } = await db.from('periods')
+          .update({ pemenang_id: pemenangSah.id, status: 'selesai' })
+          .eq('id', activePeriod.id);
+
+        isSpinning = false;
+        setSpinButtonState(false);
+
+        if (error) {
+          return alert('Gagal menyimpan pemenang: ' + error.message);
+        }
+        await loadData();
+      });
+    }
+
+    function bukaModalKas() {
+      document.getElementById('kas-input-tanggal').value = new Date().toISOString().split('T')[0];
+      document.getElementById('kas-input-jenis').value = 'masuk';
+      document.getElementById('kas-input-keterangan').value = '';
+      document.getElementById('kas-input-nominal').value = '';
+      document.getElementById('modal-kas').classList.remove('hidden');
+    }
+
+    async function simpanTransaksiKas() {
+      const tanggal = document.getElementById('kas-input-tanggal').value;
+      const jenis = document.getElementById('kas-input-jenis').value;
+      const keterangan = document.getElementById('kas-input-keterangan').value.trim();
+      const nominal = parseInt(document.getElementById('kas-input-nominal').value, 10);
+
+      if (!tanggal) return alert('Tanggal wajib diisi!');
+      if (!keterangan) return alert('Keterangan wajib diisi!');
+      if (!nominal || nominal <= 0) return alert('Nominal harus lebih dari 0!');
+
+      const { error } = await db.from('cash_transactions').insert([{ tanggal, jenis, keterangan, nominal }]);
+      if (error) return alert('Gagal menyimpan transaksi kas: ' + error.message);
+
+      document.getElementById('modal-kas').classList.add('hidden');
+      await loadKasDanKonsumsi();
+      renderAktivitasTerbaru();
+    }
+
+    async function hapusTransaksiKas(kasId) {
+      if (!confirm('Yakin ingin menghapus transaksi kas ini?')) return;
+      const { error } = await db.from('cash_transactions').delete().eq('id', kasId);
+      if (error) return alert('Gagal menghapus transaksi kas: ' + error.message);
+      await loadKasDanKonsumsi();
+      renderAktivitasTerbaru();
+    }
+
+    function bukaModalKonsumsi() {
+      document.getElementById('konsumsi-input-tanggal').value = new Date().toISOString().split('T')[0];
+      document.getElementById('konsumsi-input-item').value = '';
+      document.getElementById('konsumsi-input-jumlah').value = '1 paket';
+      document.getElementById('konsumsi-input-biaya').value = '';
+      document.getElementById('modal-konsumsi').classList.remove('hidden');
+    }
+
+    async function simpanKonsumsi() {
+      const tanggal = document.getElementById('konsumsi-input-tanggal').value;
+      const item_konsumsi = document.getElementById('konsumsi-input-item').value.trim();
+      const jumlah = document.getElementById('konsumsi-input-jumlah').value.trim() || '1 paket';
+      const biaya = parseInt(document.getElementById('konsumsi-input-biaya').value, 10);
+
+      if (!tanggal) return alert('Tanggal wajib diisi!');
+      if (!item_konsumsi) return alert('Item konsumsi wajib diisi!');
+      if (Number.isNaN(biaya) || biaya < 0) return alert('Biaya konsumsi tidak valid!');
+
+      const { error } = await db.from('consumptions').insert([{
+        period_id: activePeriod ? activePeriod.id : null,
+        tanggal,
+        item_konsumsi,
+        jumlah,
+        biaya
+      }]);
+
+      if (error) return alert('Gagal menyimpan konsumsi: ' + error.message);
+
+      document.getElementById('modal-konsumsi').classList.add('hidden');
+      await loadKasDanKonsumsi();
+      renderAktivitasTerbaru();
+    }
+
+    async function hapusKonsumsi(konsumsiId) {
+      if (!confirm('Yakin ingin menghapus item konsumsi ini?')) return;
+      const { error } = await db.from('consumptions').delete().eq('id', konsumsiId);
+      if (error) return alert('Gagal menghapus konsumsi: ' + error.message);
+      await loadKasDanKonsumsi();
+      renderAktivitasTerbaru();
+    }
+
+    init();
+  </script>
+</body>
+</html>
